@@ -13,6 +13,12 @@ spring:
     # DB ?? ?? ??
     generate-ddl: true
     hibernate:
-      ddl-auto: update # ?? ?? ?? ????
+      ddl-auto: create # ?? ?? ?? ????
     show_sql: true
+
+jwt:
+  # chatServerSecretAccessTokenchatServerSecretAccessTokenchatServerSecretAccessToken
+  secretKey: Y2hhdFNlcnZlclNlY3JldEFjY2Vzc1Rva2VuY2hhdFNlcnZlclNlY3JldEFjY2Vzc1Rva2VuY2hhdFNlcnZlclNlY3JldEFjY2Vzc1Rva2Vu
+  expiration: 3000 # minute
+
 
