@@ -1,6 +1,7 @@
 package com.example.chatserver.member.service;
 
 import com.example.chatserver.member.domain.Member;
+import com.example.chatserver.member.dto.MemberListResDto;
 import com.example.chatserver.member.dto.MemberLoginReqDto;
 import com.example.chatserver.member.dto.MemberSaveReqDto;
 import com.example.chatserver.member.repository.MemberRepository;
@@ -10,6 +11,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional // 일단 편하게 구현
@@ -43,5 +47,19 @@ public class MemberService {
             throw new IllegalArgumentException("아이디가 미존재하거나 비밀번호가 일치하지 않습니다");
         }
         return member;
+    }
+
+    public List<MemberListResDto> findAll() {
+        List<Member> members = memberRepository.findAll();
+        List<MemberListResDto> resMembers = new ArrayList<>();
+        for (Member m : members) {
+            MemberListResDto temp = new MemberListResDto();
+            temp.setId(m.getId());
+            temp.setEmail(m.getEmail());
+            temp.setName(m.getName());
+            resMembers.add(temp);
+        }
+
+        return resMembers;
     }
 }
