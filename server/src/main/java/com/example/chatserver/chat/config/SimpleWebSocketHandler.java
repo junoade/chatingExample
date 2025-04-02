@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 // connect 로 웹소켓 연결요청이 들어왔을 때 이를 처리할 클래스
-@Component
+// @Component
 @Slf4j
 public class SimpleWebSocketHandler extends TextWebSocketHandler {
 
