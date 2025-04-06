@@ -1,6 +1,8 @@
 package com.example.chatserver.chat.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -8,7 +10,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
+@RequiredArgsConstructor
 public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final StompHandler stompHandler;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -27,5 +32,13 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
         // topic/n 형태로 메시지를 수신(sub)하도록 설정
         registry.enableSimpleBroker("/topic");
+    }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        // 최초 웹소캣 요청 (connect, subscribe, disconnect) 등의 요청시에는 http header 등 http 메시지로 전달이 가능하고
+        // 이를 interceptor 통해 가로채서 토큰 유효성 검증
+        // Message 객체 안에 담겨있는 메시지
+        registration.interceptors(stompHandler);
     }
 }
