@@ -31,7 +31,10 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/publish");
 
         // topic/n 형태로 메시지를 수신(sub)하도록 설정
+        // 내장 브로커 지정
         registry.enableSimpleBroker("/topic");
+        // 외장 브로커 지정
+        // registry.enableStompBrokerRelay("/topic");
     }
 
     @Override
