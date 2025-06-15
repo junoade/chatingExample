@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -100,5 +101,28 @@ public class ChatService {
         }
 
         return resDtoList;
+    }
+
+    public void joinGroupChat(Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new EntityNotFoundException("지정된 채팅방이 없습니다."));
+
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Email 주소를 확인하세요."));
+
+        // 기존 채팅방 참여 여부 확인
+        Optional<ChatParticipant> participant = chatParticipantRepository.findByChatRoomAndMember(chatRoom, member);
+        if(!participant.isPresent()) {
+            addParticipant(chatRoom, member);
+        }
+
+    }
+
+
+    private void addParticipant(ChatRoom chatRoom, Member member) {
+        ChatParticipant chatParticipant = ChatParticipant.builder()
+                .chatRoom(chatRoom)
+                .member(member)
+                .build();
+        chatParticipantRepository.save(chatParticipant);
     }
 }

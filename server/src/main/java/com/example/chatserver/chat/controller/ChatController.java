@@ -29,4 +29,10 @@ public class ChatController {
         return new ResponseEntity<>(list, HttpStatus.OK);
 
     }
+
+    @PostMapping("/room/group/join/{roomId}")
+    public ResponseEntity<?> joinGroupChatRoom(@PathVariable("roomId") Long roomId) {
+        chatService.joinGroupChat(roomId);
+        return ResponseEntity.ok().build();
+    }
 }
