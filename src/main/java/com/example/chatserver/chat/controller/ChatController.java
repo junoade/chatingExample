@@ -1,13 +1,14 @@
 package com.example.chatserver.chat.controller;
 
+import com.example.chatserver.chat.dto.ChatRoomListResDto;
 import com.example.chatserver.chat.service.ChatService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -20,5 +21,12 @@ public class ChatController {
     public ResponseEntity<?> createGroupRoom(@RequestParam("roomName") String roomName) {
         chatService.createGroupRoom(roomName);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/room/group/list")
+    public ResponseEntity<?> getGroupChatRooms() {
+        List<ChatRoomListResDto> list = chatService.getGroupChatRooms();
+        return new ResponseEntity<>(list, HttpStatus.OK);
+
     }
 }
