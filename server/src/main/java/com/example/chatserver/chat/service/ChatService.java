@@ -5,6 +5,7 @@ import com.example.chatserver.chat.domain.ChatParticipant;
 import com.example.chatserver.chat.domain.ChatRoom;
 import com.example.chatserver.chat.domain.ReadStatus;
 import com.example.chatserver.chat.dto.ChatMessageReqDto;
+import com.example.chatserver.chat.dto.ChatRoomListResDto;
 import com.example.chatserver.chat.repository.ChatMessageRepository;
 import com.example.chatserver.chat.repository.ChatParticipantRepository;
 import com.example.chatserver.chat.repository.ChatRoomRepository;
@@ -16,6 +17,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -84,5 +86,19 @@ public class ChatService {
                 .member(member)
                 .build();
         chatParticipantRepository.save(chatParticipant);
+    }
+
+    public List<ChatRoomListResDto> getGroupChatRooms() {
+        List<ChatRoom> chatRooms = chatRoomRepository.findByIsGroupChat("Y");
+        List<ChatRoomListResDto> resDtoList = new ArrayList<>();
+        for (ChatRoom chatRoom : chatRooms) {
+            ChatRoomListResDto resDto = ChatRoomListResDto.builder()
+                    .roomId(chatRoom.getId())
+                    .roomName(chatRoom.getName())
+                    .build();
+            resDtoList.add(resDto);
+        }
+
+        return resDtoList;
     }
 }
