@@ -2,6 +2,7 @@ package com.example.chatserver.chat.controller;
 
 import com.example.chatserver.chat.dto.ChatMessageDto;
 import com.example.chatserver.chat.dto.ChatRoomListResDto;
+import com.example.chatserver.chat.dto.MyChatListResDto;
 import com.example.chatserver.chat.service.ChatService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -47,5 +48,12 @@ public class ChatController {
     public ResponseEntity<?> readChatRoom(@PathVariable("roomId") Long roomId) {
         chatService.messageRead(roomId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/room/mychat")
+    public ResponseEntity<?> getMyChat() {
+        List<MyChatListResDto> dtos = chatService.getMyChatRooms();
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
+
     }
 }
