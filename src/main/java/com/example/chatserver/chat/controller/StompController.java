@@ -1,11 +1,10 @@
 package com.example.chatserver.chat.controller;
 
-import com.example.chatserver.chat.dto.ChatMessageReqDto;
+import com.example.chatserver.chat.dto.ChatMessageDto;
 import com.example.chatserver.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.*;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -21,7 +20,7 @@ public class StompController {
     // old : 클라이언트에서 특정 publish/roomid 형태로 메시지 발행시 MessageMapping로 메세지 라우팅
     // new : 동적 바인딩 잘 안됨
     // @DestinationVariable : @MessageMapping 과 함께 쓰이며, 정의된 WebSocket Controller 내에서만 사용
-    public void sendMessage(@Header("roomId") Long roomId, @Payload ChatMessageReqDto dto) {
+    public void sendMessage(@Header("roomId") Long roomId, @Payload ChatMessageDto dto) {
         log.info("Room {} message: {}", roomId, dto.getMessage());
 
         chatService.saveMessage(roomId, dto);
