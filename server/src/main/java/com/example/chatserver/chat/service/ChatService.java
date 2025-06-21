@@ -4,7 +4,7 @@ import com.example.chatserver.chat.domain.ChatMessage;
 import com.example.chatserver.chat.domain.ChatParticipant;
 import com.example.chatserver.chat.domain.ChatRoom;
 import com.example.chatserver.chat.domain.ReadStatus;
-import com.example.chatserver.chat.dto.ChatMessageReqDto;
+import com.example.chatserver.chat.dto.ChatMessageDto;
 import com.example.chatserver.chat.dto.ChatRoomListResDto;
 import com.example.chatserver.chat.repository.ChatMessageRepository;
 import com.example.chatserver.chat.repository.ChatParticipantRepository;
@@ -46,7 +46,7 @@ public class ChatService {
      * @param roomId
      * @param dto
      */
-    public void saveMessage(Long roomId, ChatMessageReqDto dto) {
+    public void saveMessage(Long roomId, ChatMessageDto dto) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new EntityNotFoundException("해당 채팅방이 없거나 잘못된 채팅방입니다."));
         Member sender = memberRepository.findByEmail(dto.getSenderEmail()).orElseThrow(() -> new EntityNotFoundException("해당 회원 이메일이 없거나 유효하지 않습니다."));
 
@@ -124,5 +124,51 @@ public class ChatService {
                 .member(member)
                 .build();
         chatParticipantRepository.save(chatParticipant);
+    }
+
+    public List<ChatMessageDto> getChatHistory(Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new EntityNotFoundException("지정된 채팅방이 없습니다."));
+
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Email 주소를 확인하세요."));
+
+        List<ChatParticipant> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
+
+        boolean hasMember = false;
+        for (ChatParticipant c : chatParticipants) {
+            if (c.getMember().equals(member)) {
+                hasMember = true;
+                break;
+            }
+        }
+
+        if(!hasMember) {
+            throw new IllegalArgumentException("채팅방 접근 권한이 없습니다");
+        }
+
+        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomOrderByCreateTimeAsc(chatRoom);
+        List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
+        for (ChatMessage message : chatMessages) {
+            ChatMessageDto dto = ChatMessageDto.builder()
+                    .message(message.getContent())
+                    .senderEmail(message.getMember().getEmail())
+                    .build();
+            chatMessageDtos.add(dto);
+        }
+
+        return chatMessageDtos;
+    }
+
+    public boolean isRoomParticipant(String email, Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new EntityNotFoundException("지정된 채팅방이 없습니다."));
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Email 주소를 확인하세요."));
+
+        List<ChatParticipant> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
+        for(ChatParticipant c : chatParticipants) {
+            if(c.getMember().equals(member)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
