@@ -171,4 +171,17 @@ public class ChatService {
         }
         return false;
     }
+
+
+    public void messageRead(Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new EntityNotFoundException("지정된 채팅방이 없습니다."));
+
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Email 주소를 확인하세요."));
+
+        List<ReadStatus> readStatuses = readStatusRepository.findByChatRoomAndMember(chatRoom, member);
+        for(ReadStatus r : readStatuses) {
+            r.updateIsRead(true); // dirty checking
+        }
+    }
 }
