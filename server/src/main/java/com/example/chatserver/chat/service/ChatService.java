@@ -205,6 +205,31 @@ public class ChatService {
 
         return dtos;
     }
+
+    public void leaveGroupChatRoom(Long roomId) {
+        // 채팅방 참여자에선 삭제, 모든 참여자가 나간 경우 Room, Message도 삭제
+        // c.f) 특정 컬럼만 update 등
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new EntityNotFoundException("지정된 채팅방이 없습니다."));
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Email 주소를 확인하세요."));
+
+        if (chatRoom.getIsGroupChat().equals("N")) {
+            throw new IllegalArgumentException("그룹채팅방이 아닙니다.");
+        }
+
+        ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomAndMember(chatRoom, member)
+                .orElseThrow(() -> new EntityNotFoundException("참여자를 찾을 수 없습니다."));
+
+        chatParticipantRepository.delete(chatParticipant);
+
+        List<ChatParticipant> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
+        if (chatParticipants.isEmpty()) {
+            // CASCADE DELETE
+            // ChatRoom -> {ChatParticipant, ChatMessage -> {ReadStatus}}
+            chatRoomRepository.delete(chatRoom);
+        }
+
+    }
 }
 
 
