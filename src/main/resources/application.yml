@@ -21,4 +21,10 @@ jwt:
   secretKey: Y2hhdFNlcnZlclNlY3JldEFjY2Vzc1Rva2VuY2hhdFNlcnZlclNlY3JldEFjY2Vzc1Rva2VuY2hhdFNlcnZlclNlY3JldEFjY2Vzc1Rva2Vu
   expiration: 3000 # minute
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
 
