@@ -3,6 +3,7 @@ package com.example.chatserver.chat.controller;
 import com.example.chatserver.chat.dto.ChatMessageDto;
 import com.example.chatserver.chat.dto.ChatRoomListResDto;
 import com.example.chatserver.chat.dto.MyChatListResDto;
+import com.example.chatserver.chat.dto.PrivateChatRoomResDto;
 import com.example.chatserver.chat.service.ChatService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -60,5 +61,15 @@ public class ChatController {
     public ResponseEntity<?> leaveGroupChatRoom(@PathVariable("roomId") Long roomId) {
         chatService.leaveGroupChatRoom(roomId);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/room/private/create")
+    public ResponseEntity<?> getOrCreatePrivateChatRoom(@RequestParam("otherMemberId") Long otherMemberId) {
+        Long roomId = chatService.getOrCreatePrivateRoom(otherMemberId);
+        PrivateChatRoomResDto dto = PrivateChatRoomResDto.builder()
+                .roomId(roomId)
+                .build();
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 }

@@ -15,6 +15,7 @@ import com.example.chatserver.member.domain.Member;
 import com.example.chatserver.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@Slf4j
 public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatParticipantRepository chatParticipantRepository;
@@ -106,6 +108,7 @@ public class ChatService {
 
     public void joinGroupChat(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new EntityNotFoundException("지정된 채팅방이 없습니다."));
+        validateGroupChat(chatRoom);
 
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Email 주소를 확인하세요."));
@@ -116,6 +119,12 @@ public class ChatService {
             addParticipant(chatRoom, member);
         }
 
+    }
+
+    private void validateGroupChat(ChatRoom chatRoom) {
+        if(chatRoom == null || chatRoom.getIsGroupChat().equals("N")) {
+            throw new IllegalArgumentException("그룹채팅방이 아닙니다");
+        }
     }
 
 
@@ -230,8 +239,28 @@ public class ChatService {
         }
 
     }
+
+    public Long getOrCreatePrivateRoom(Long otherMemberId) {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new EntityNotFoundException("Email 주소를 확인하세요."));
+        Member otherMember = memberRepository.findById(otherMemberId).orElseThrow(() -> new EntityNotFoundException("유효하지 않은 채팅 상대입니다."));
+
+        log.debug("member : {}, otherMember : {}", member.getId(), otherMember.getId());
+
+        Optional<ChatRoom> chatRoom = chatParticipantRepository.findChatRoomIdExistingPrivateRoom(member.getId(), otherMember.getId());
+        if(chatRoom.isPresent()) {
+            return chatRoom.get().getId();
+        }
+
+        ChatRoom newChatRoom = ChatRoom.builder()
+                .name(member.getName() + "|" + otherMember.getName())
+                .isGroupChat("N")
+                .build();
+        chatRoomRepository.save(newChatRoom);
+
+        addParticipant(newChatRoom, member);
+        addParticipant(newChatRoom, otherMember);
+
+        return newChatRoom.getId();
+    }
 }
-
-
-
-
