@@ -1,6 +1,7 @@
 # spring.application.name=chatserver
 
 spring:
+
   datasource:
       driver-class-name: com.mysql.cj.jdbc.Driver
       url: jdbc:mysql://localhost:3306/chatdb?useSSL=false
@@ -15,6 +16,10 @@ spring:
     hibernate:
       ddl-auto: update # ?? ?? ?? ????
     show_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 jwt:
   # chatServerSecretAccessTokenchatServerSecretAccessTokenchatServerSecretAccessToken
