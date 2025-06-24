@@ -1,12 +1,13 @@
 # spring.application.name=chatserver
 
 spring:
+  # port: ${SERVER_PORT:8080}
 
   datasource:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/chatdb?useSSL=false
-      username: root
-      password: predator1234
+      driver-class-name: ${DB_DRIVER}
+      url: ${DB_URL}
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
   jpa:
     database: mysql
     # InnoDB ??
@@ -18,13 +19,12 @@ spring:
     show_sql: true
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 
 jwt:
-  # chatServerSecretAccessTokenchatServerSecretAccessTokenchatServerSecretAccessToken
-  secretKey: Y2hhdFNlcnZlclNlY3JldEFjY2Vzc1Rva2VuY2hhdFNlcnZlclNlY3JldEFjY2Vzc1Rva2VuY2hhdFNlcnZlclNlY3JldEFjY2Vzc1Rva2Vu
-  expiration: 3000 # minute
+  secretKey: ${JWT_SECRET_KEY}
+  expiration: ${JWT_EXPIRATION} # minute
 
 springdoc:
   api-docs:
@@ -32,4 +32,10 @@ springdoc:
   swagger-ui:
     enabled: true
 
-
+logging:
+  # file:
+  #  path: logs/
+  level:
+    root: debug
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
