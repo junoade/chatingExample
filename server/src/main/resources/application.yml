@@ -1,7 +1,7 @@
 # spring.application.name=chatserver
 
 spring:
-  port: ${SERVER_PORT:8080}
+  # port: ${SERVER_PORT:8080}
 
   datasource:
       driver-class-name: ${DB_DRIVER}
@@ -23,7 +23,6 @@ spring:
       port: ${REDIS_PORT}
 
 jwt:
-  # chatServerSecretAccessTokenchatServerSecretAccessTokenchatServerSecretAccessToken
   secretKey: ${JWT_SECRET_KEY}
   expiration: ${JWT_EXPIRATION} # minute
 
@@ -33,4 +32,10 @@ springdoc:
   swagger-ui:
     enabled: true
 
-
+logging:
+  # file:
+  #  path: logs/
+  level:
+    root: debug
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
