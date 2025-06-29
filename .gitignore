@@ -1,2 +1,20 @@
+############################################
+# Java & Gradle/Maven
+build/
+target/
+out/
+*.class
+.gradle/
+
+# IDE 설정
+.idea/
+*.iml
+
+# OS
+.DS_Store
+############################################
+# For this project
+############################################
 ### env ###
 src/main/resources/properties/env.properties
+.env
